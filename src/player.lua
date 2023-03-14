@@ -3,15 +3,16 @@ player = {}
 
 function player.load()
     player.x = 400
-    player.y = 400
-    player.speed = 250
+    player.y = 1450
+    player.speed = 300
     player.spriteSheet = love.graphics.newImage('sprites/player.png')
     player.grid = anim8.newGrid(16, 16, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
 
     player.animations = {}
     player.animations.walk = anim8.newAnimation(player.grid('1-5', 2), 0.1)
+    player.animations.attack = anim8.newAnimation(player.grid('1-4', 5), 0.14)
     player.animations.idle = anim8.newAnimation(player.grid('1-1', 1), 0.1)
-    player.anim = player.animations.walk
+    player.anim = player.animations.idle
 
     facingRight = true
     facingLeft = false
@@ -35,6 +36,7 @@ end
 
 function playerMovement(dt)
     local isMoving = false
+    local attack = false
     local vX = 0
     local vY = 0
 
@@ -56,9 +58,17 @@ function playerMovement(dt)
         facingLeft = true
     end
 
+    if love.keyboard.isDown('e') then
+        attack = true
+    end
+
     if isMoving == false then
         player.anim = player.animations.idle
         player.anim:gotoFrame(1)
+    end
+
+    if isMoving == false and attack == true then
+       player.anim = player.animations.attack
     end
 
     player.collider:setLinearVelocity(vX * player.speed, vY)
