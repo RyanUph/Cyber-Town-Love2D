@@ -35,8 +35,8 @@ end
 -- Player Functions
 
 function playerMovement(dt)
-    local isMoving = false
-    local attack = false
+    isMoving = false
+    attack = false
     local vX = 0
     local vY = 0
 
