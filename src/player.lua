@@ -1,5 +1,6 @@
 anim8 = require('libraries/anim8')
 player = {}
+bullets = {}
 
 function player.load()
     player.x = 400
@@ -14,12 +15,21 @@ function player.load()
     player.animations.idle = anim8.newAnimation(player.grid('1-1', 1), 0.1)
     player.anim = player.animations.idle
 
+    player.data = {}
+    player.data.score = 0
+    player.data.bestScore = 0
+
     facingRight = true
     facingLeft = false
 end
 
 function player.update(dt)
     playerMovement(dt)
+    bulletMovement(dt)
+    destroyBullet(dt)
+    killEnemy(dt)
+
+    player.data.bestScore = player.data.score
 end
 
 function player.draw()
@@ -29,6 +39,10 @@ function player.draw()
 
     if facingLeft then
         player.anim:draw(player.spriteSheet, player.x, player.y, nil, -5, 5, 8, 8)
+    end
+
+    for _, bullet in ipairs(bullets) do
+        love.graphics.draw(sprites.bullet, bullet.x, bullet.y, nil, 3, 3, 8, 8)
     end
 end
 
@@ -75,4 +89,60 @@ function playerMovement(dt)
     player.x = player.collider:getX()
     player.y = player.collider:getY()
     player.anim:update(dt)
+end
+
+-- Bullet Functions
+
+function bulletMovement(dt)
+    for _, bullet in ipairs(bullets) do
+        if bullet.direction == 1 then bullet.x = bullet.x + bullet.speed * dt end
+        if bullet.direction == 2 then bullet.x = bullet.x - bullet.speed * dt end
+    end
+end
+
+function destroyBullet(dt)
+    for i = #bullets, 1, -1 do
+        local b = bullets[i]
+        local gx, gy = cam:worldCoords(0, 0)
+        local gw, gh = cam:worldCoords(love.graphics.getWidth(), love.graphics.getHeight())
+        if b.x < gx - 10 or b.y < gy - 10 or b.x > gw + 10 or b.y > gh + 10 then
+            table.remove(bullets, i)
+        end
+    end
+end
+
+function killEnemy(dt)
+    for _, enemy in ipairs(enemies) do
+        for _, bullet in ipairs(bullets) do
+            if distanceBetween(enemy.x, enemy.y, bullet.x, bullet.y) < 30 then
+                enemy.dead = true
+                bullet.dead = true
+                player.data.score = player.data.score + 1
+            end
+        end
+    end
+
+    for i = #bullets, 1, -1 do
+        local b = bullets[i]
+        if b.dead == true then table.remove(bullets, i) end
+    end
+
+    for i = #enemies, 1, -1 do
+        local e = enemies[i]
+        if e.dead == true then
+            table.remove(enemies, i)
+        end
+    end
+end
+
+function spawnBullet()
+    local bullet = {}
+    bullet.x = player.x
+    bullet.y = player.y
+    bullet.speed = 800
+    bullet.dead = false
+
+    if facingRight then bullet.direction = 1 end
+    if facingLeft then bullet.direction = 2 end
+    table.insert(bullets, bullet)
 end

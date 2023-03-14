@@ -5,7 +5,7 @@ function loadMap(mapName)
 
     groundRC = {}
     if gameMap.layers["GroundRC"] then
-        for i, obj in pairs(gameMap.layers["GroundRC"].objects) do
+        for _, obj in pairs(gameMap.layers["GroundRC"].objects) do
             ground = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
             ground:setType('static')
             table.insert(groundRC, ground)
