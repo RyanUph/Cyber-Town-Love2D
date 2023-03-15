@@ -25,10 +25,10 @@ function love.load()
 end
 
 function love.update(dt)
-    cam:lookAt(player.x, player.y)
     world:update(dt)
     player.update(dt)
     enemies.update(dt)
+    cam:lookAt(player.x, player.y)
 
     scoreText = love.graphics.newText(font, "Score: " .. player.data.score)
 end
@@ -52,6 +52,7 @@ function distanceBetween(x1, y1, x2, y2)
 end
 
 function love.keypressed(key)
-    if key == 'e' then spawnBullet() end
+    --if key == 'e' and not attack then spawnBullet() end
     if key == 'q' then spawnEnemy(cam:worldCoords(love.mouse.getPosition())) end
+    if key == "e" and player.anim == player.animations.idle and not attack then attack = true spawnBullet() end
 end

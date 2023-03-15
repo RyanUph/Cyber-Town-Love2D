@@ -11,7 +11,7 @@ function player.load()
 
     player.animations = {}
     player.animations.walk = anim8.newAnimation(player.grid('1-5', 2), 0.1)
-    player.animations.attack = anim8.newAnimation(player.grid('1-4', 5), 0.14)
+    player.animations.attack = anim8.newAnimation(player.grid('1-4', 5), 0.14, function() attack = false player.anim = player.animations.idle player.anim:gotoFrame(1) end)
     player.animations.idle = anim8.newAnimation(player.grid('1-1', 1), 0.1)
     player.anim = player.animations.idle
 
@@ -50,7 +50,7 @@ end
 
 function playerMovement(dt)
     isMoving = false
-    attack = false
+    --attack = false
     local vX = 0
     local vY = 0
 
@@ -70,10 +70,6 @@ function playerMovement(dt)
         isMoving = true
         facingRight = false
         facingLeft = true
-    end
-
-    if love.keyboard.isDown('e') then
-        attack = true
     end
 
     if isMoving == false then
